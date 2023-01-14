@@ -1,0 +1,21 @@
+{
+    "type": "module",
+    "name": "MiPrimeraBaseDeDatos-Websockets",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "test": "echo \"Error: no test specified\" && exit MiPrimeraBaseDeDatos-Websockets"
+    },
+    "keywords": [],
+    "author": "lucianoAmato",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.18.2",
+        "express-handlebars": "^5.2.0",
+        "knex": "^2.4.0",
+        "socket.io": "^4.5.4",
+        "mysql": "^2.18.1"
+    }
+}
