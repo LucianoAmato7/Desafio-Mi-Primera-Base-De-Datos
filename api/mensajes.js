@@ -1,54 +1,63 @@
-import fs from 'fs'
+import knexLib from 'knex'
+import optionsSQLite3 from '../options/SQLite3.js'
 
-const dataJSON = fs.readFileSync('./mensajes.txt', 'utf-8');
-const msjTxt = JSON.parse(dataJSON)
-
-class ApiMsj {
+class ApiMsjSQL {
 
     constructor() {
-        this.mensajes = msjTxt
+        this.knex = knexLib(optionsSQLite3)
     }
-
     
+
+    crearTablaMsj(){
+
+        this.knex.schema.hasTable('mensajes')
+        .then((resp)=>{
+            Existe(resp)
+        })
+        
+        const Existe = (existe) => {
+            if(existe){
+                console.log('La tabla mensajes ya existe');
+                return this.knex('mensajes').select('*')
+            }else {
+                console.log('La tabla mensajes no existe y se procede a ser creada');
+                this.knex.schema.createTable('mensajes', table => {
+                    table.string('email', 100);
+                    table.string('fyh', 50);
+                    table.string('mensaje', 500);
+                })
+                .then(()=> {
+                    console.log('tabla creada con exito');
+                    return this.knex('mensajes').select('*')
+                }).catch((err) => { console.log(err); throw err})
+                .finally(() => {
+                    this.knex.destroy()
+                })
+                
+            }
+        }  
+        
+    }
     
     ListarMsjs(){
-        
-        if(this.mensajes){
-            
-            return this.mensajes
-            
-        } else {
-            
-            return []
-            
-        }
+
+        return this.knex('mensajes').select('*')
         
     }
     
     guardarMsj( data ) {
+
+        this.knex('mensajes').insert(data)
+        .then(()=>{
+            console.log('msj guardado');
+        })
     
-        this.mensajes.push(data)
-    
-        async function guardarMsj_()  {
-    
-            try{
-    
-                await fs.promises.writeFile('./mensajes.txt', JSON.stringify( msjTxt, null, '\t'))
-    
-                console.log(`Historial de mensajes actualizado`);
-    
-            }catch (err) {
-    
-                console.log(`Se ha producido un error: ${err}`);
-    
-            } 
-            
-        }
-    
-        guardarMsj_()
-    
+    }
+
+    close() {
+        return this.knex.destroy();
     }
 }
 
 
-export default ApiMsj
+export default ApiMsjSQL

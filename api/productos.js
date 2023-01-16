@@ -1,14 +1,14 @@
 import knexLib from 'knex'
+import optionsMariaDB from '../options/mariaDB.js'
 
 class ApiProdsSQL {
 
-    constructor(config){
-        this.knex = knexLib(config)
+    constructor(){
+        this.knex = knexLib(optionsMariaDB)
     }
 
 
-
-    crearTabla(){
+    crearTablaProds(){
 
         this.knex.schema.hasTable('productos')
         .then((resp)=>{
@@ -40,6 +40,9 @@ class ApiProdsSQL {
                 }).then(()=> {
                     console.log("Productos insertados con exito");
                     return this.knex('productos').select('*')
+                }).catch((err) => { console.log(err); throw err})
+                .finally(() => {
+                    this.knex.destroy()
                 })
                 
             }
@@ -49,15 +52,23 @@ class ApiProdsSQL {
         
 
     ListarProds(){
-        return this.knex('productos').select('*');
+        
+        this.knex('productos').select('*')
+        .then((prods) => { return prods })
+        .catch((err) => { console.log(err); throw err})
+        .finally(() => {
+            this.knex.destroy()
+        })
+    
     }
 
     guardarProd( newProd ){
-        return this.knex('productos').insert(newProd)
-    }
-
-    close() {
-        return this.knex.destroy();
+        this.knex('productos').insert(newProd)
+        .then(() => {return console.log('Producto Cargado');})
+        .catch((err)=> {err})
+        .finally(()=> {
+            this.knex.destroy();
+        })
     }
 
 }

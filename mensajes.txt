@@ -1,7 +1,0 @@
-[
-	{
-		"email": "luciano@outlook.com",
-		"fyh": "DD/MM/YYYY HH:MM:SS",
-		"mensaje": "mensaje de prueba"
-	}
-]
