@@ -4,7 +4,7 @@ const optionsMariaDB = {
         host: 'localhost',
         user: 'root',
         password: '',
-        database: 'prods'
+        database: 'coderhouse'
     }
 }
 

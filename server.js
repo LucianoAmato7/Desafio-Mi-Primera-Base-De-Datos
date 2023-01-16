@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import optionsMariaDB from './options/mariaDB.js'
 
+
 const app = express()
 const server = createServer(app); 
 const io = new Server(server);
@@ -36,29 +37,14 @@ let mensajesN = apiMsjs.ListarMsjs()
 //BASE DE DATOS
 // ----------------------------------------------|
 
+
+// CORROBORA SI EXISTE LA TABLA, SI NO EXISTE, LA CREA.
 apiProdsSQL.crearTabla()
-.then(() => {
-    console.log("Tabla creada")
-
-    const articulos = [
-        {
-        title: "Iphone 14 Pro Max", 
-        price: 1650, 
-        thumbnail: "https://i.ibb.co/KGKjZBG/i14-Pro-Max.png",
-        id: 1
-        }
-    ]
-    return apiProdsSQL.guardarProd(articulos)
-})
-.then(() => {
-   console.log("Articulos insertados con exito");
-    return apiProdsSQL.ListarProds();
-})
-.then(productos => {
-
-    console.log("Articulos listados")
-    console.table(productos)
-
+apiProdsSQL.ListarProds()
+.then((prods)=> {
+    console.log('Productos listados con exito');
+    console.table(prods)
+    SocketConnection(prods)
 })
 .catch((err) => { console.log(err); throw err})
 .finally(() => {
@@ -74,40 +60,40 @@ app.get('/', (req, res) => {
     res.render('formulario')
 });
 
-
-// CHAT CLIENTE SERVIDOR
-io.on('connection', socket => {
-            
-    console.log('Nuevo cliente conectado')
+const SocketConnection = (productos) => {
     
-    socket.emit('mensajes', apiMsjs.ListarMsjs())
+    // CHAT CLIENTE SERVIDOR
+    io.on('connection', socket => {
+                
+        console.log('Nuevo cliente conectado')
+        
+        //MSJ
 
-    socket.on('nuevo-mensaje', data => {
+        socket.emit('mensajes', apiMsjs.ListarMsjs())
+    
+        socket.on('nuevo-mensaje', data => {
+    
+            apiMsjs.guardarMsj(data)
+    
+            io.sockets.emit('mensajes', mensajesN)
+        })
+    
+    
+        //PRODS
+    
+        socket.emit('productos', productos)
+    
+        socket.on('nuevo-producto', (data) => {
+    
+           apiProdsSQL.guardarProd(data)
 
-        apiMsjs.guardarMsj(data)
+            io.sockets.emit('productos', )
+    
+        })
+    
+    });
+}
 
-        io.sockets.emit('mensajes', mensajesN)
-    })
-
-    //PRODS
-
-    //VER SI DEVUELVE PROMESA
-
-    socket.emit('productos', )
-
-    socket.on('nuevo-producto', data => {
-
-        //VER SI DEVUELVE PROMESA
-        apiProdsSQL.guardarProd(data)
-
-        console.log('Producto Guardado');
-
-        //VER SI DEVUELVE PROMESA
-        io.sockets.emit('productos', () => {apiProdsSQL.ListarProds()})
-
-    })
-
-});
 
 
 //INICIAMOS EL SERVIDOR

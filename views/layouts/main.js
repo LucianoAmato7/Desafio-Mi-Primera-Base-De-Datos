@@ -3,7 +3,7 @@ let socket = io.connect();
 // VISTA DE PRODUCTOS
 
 socket.on('productos', data => {
-
+    console.log(data);
     if(data) {
 
         document.getElementById('vistaContainer').innerHTML =`
@@ -33,6 +33,7 @@ socket.on('productos', data => {
         document.getElementById('vistaContainer').innerHTML = '<h3 class="alert alert-danger">No se encontraron productos</h3>'
 
     }
+
 });
 
 function AddProducto(e){
@@ -41,7 +42,7 @@ function AddProducto(e){
         price: document.getElementById('Precio').value,
         thumbnail: document.getElementById('URLImagen').value
     }
-    socket.emit('nuevo-producto', [productoN]);
+    socket.emit('nuevo-producto', productoN);
     return false;
 }
 
