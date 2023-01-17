@@ -45,8 +45,6 @@ apiProdsSQL.crearTablaProds()
 apiMsjSQL.crearTablaMsj()
 
 
-
-
 //FUNCIONALIDADES
 // ----------------------------------------------|
 
@@ -56,42 +54,65 @@ app.get('/', (req, res) => {
 });
 
     
+        
 io.on('connection', socket => {
             
     console.log('Nuevo cliente conectado')
     
-    //MSJ
+    //MSJS
 
-    //TENGO QUE EMITIR LOS MENSAJES ACTUALIZADOS
-    socket.emit('mensajes', )
+    apiMsjSQL.ListarMsjs().then((msjs)=>{
+
+        socket.emit('mensajes', msjs)
+
+    })
+
 
     socket.on('nuevo-mensaje', data => {
 
-        //NO CUMPLE LA FUNCION
         apiMsjSQL.guardarMsj(data)
+        .then(()=>{
 
-        //TENGO QUE EMITIR LOS MENSAJES ACTUALIZADOS
-        io.sockets.emit('mensajes', )
+            console.log('Mensaje cargado en la base de datos');
+            return apiMsjSQL.ListarMsjs()
+
+        }).then((prods)=>{
+
+            io.sockets.emit('mensajes', prods)
+            console.log('Vista de mensajes actualizada');
+
+        })
+
     })
 
-    
+
 
     //PRODS
 
-    //TENGO QUE EMITIR LOS PRODUCTOS
-    socket.emit( 'productos', )
+    apiProdsSQL.ListarProds().then((prods)=>{
+
+        socket.emit( 'productos', prods)
+        
+    })
 
     socket.on('nuevo-producto', (data) => {
 
-        //NO CUMPLE SU FUNION
+        
         apiProdsSQL.guardarProd(data)
+        .then(()=>{
 
-        //TENGP QUE EMITIR LOS PRODUCTOS ACTUALIZADOS
-        io.sockets.emit('productos', )
+            console.log('Producto cargado en la base de datos');
+            return apiProdsSQL.ListarProds()
+
+        }).then((prods)=>{
+
+            io.sockets.emit('productos', prods)
+            console.log('Vista de productos actualizada');
+
+        })
 
     })
 });
-
 
 
 //INICIAMOS EL SERVIDOR

@@ -16,10 +16,14 @@ class ApiProdsSQL {
         })
         
         const Existe = (existe) => {
+            
             if(existe){
+
                 console.log('La tabla productos ya existe');
                 return this.knex('productos').select('*')
+
             }else {
+
                 console.log('La tabla productos no existe y se procede a ser creada');
                 this.knex.schema.createTable('productos', table => {
                     table.increments('id').primary();
@@ -40,11 +44,8 @@ class ApiProdsSQL {
                 }).then(()=> {
                     console.log("Productos insertados con exito");
                     return this.knex('productos').select('*')
-                }).catch((err) => { console.log(err); throw err})
-                .finally(() => {
-                    this.knex.destroy()
                 })
-                
+
             }
         }  
         
@@ -53,24 +54,16 @@ class ApiProdsSQL {
 
     ListarProds(){
         
-        this.knex('productos').select('*')
-        .then((prods) => { return prods })
-        .catch((err) => { console.log(err); throw err})
-        .finally(() => {
-            this.knex.destroy()
-        })
+       return this.knex('productos').select('*')
+
     
     }
 
     guardarProd( newProd ){
-        this.knex('productos').insert(newProd)
-        .then(() => {return console.log('Producto Cargado');})
-        .catch((err)=> {err})
-        .finally(()=> {
-            this.knex.destroy();
-        })
-    }
 
+        return this.knex('productos').insert(newProd)
+
+    }
 }
 
 export default ApiProdsSQL

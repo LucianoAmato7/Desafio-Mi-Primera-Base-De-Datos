@@ -6,7 +6,7 @@ class ApiMsjSQL {
     constructor() {
         this.knex = knexLib(optionsSQLite3)
     }
-    
+
 
     crearTablaMsj(){
 
@@ -47,15 +47,8 @@ class ApiMsjSQL {
     
     guardarMsj( data ) {
 
-        this.knex('mensajes').insert(data)
-        .then(()=>{
-            console.log('msj guardado');
-        })
+        return this.knex('mensajes').insert(data)
     
-    }
-
-    close() {
-        return this.knex.destroy();
     }
 }
 

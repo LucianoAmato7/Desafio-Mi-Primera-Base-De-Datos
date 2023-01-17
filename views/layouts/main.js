@@ -3,7 +3,7 @@ let socket = io.connect();
 // VISTA DE PRODUCTOS
 
 socket.on('productos', data => {
-    console.log(`productos recibidos para su vista ${data}`);
+
     if(data) {
 
         document.getElementById('vistaContainer').innerHTML =`
@@ -50,7 +50,6 @@ function AddProducto(e){
 // CENTRO DE MENSAJES
 
 socket.on('mensajes', data => {
-    console.log(`mensajes recibidos para su vista ${data}`);
     document.getElementById('contenedorMsj').innerHTML = data.map( msj => 
         `<span class="text-primary"><strong>${msj.email}</strong></span>
         <span class="text-danger">[ ${msj.fyh} ]</span>: 
