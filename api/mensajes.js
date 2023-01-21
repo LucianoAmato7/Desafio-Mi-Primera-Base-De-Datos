@@ -1,56 +1,50 @@
-import knexLib from 'knex'
-import optionsSQLite3 from '../options/SQLite3.js'
+import knexLib from "knex";
+import optionsSQLite3 from "../options/SQLite3.js";
 
 class ApiMsjSQL {
+  constructor() {
+    this.knex = knexLib(optionsSQLite3);
+  }
 
-    constructor() {
-        this.knex = knexLib(optionsSQLite3)
-    }
+  crearTablaMsj() {
+    this.knex.schema.hasTable("mensajes").then((resp) => {
+      Existe(resp);
+    });
 
+    const Existe = (existe) => {
+      if (existe) {
+        console.log("La tabla mensajes ya existe");
+        return this.knex("mensajes").select("*");
+      } else {
+        console.log("La tabla mensajes no existe y se procede a ser creada");
+        this.knex.schema
+          .createTable("mensajes", (table) => {
+            table.string("email", 100);
+            table.string("fyh", 50);
+            table.string("mensaje", 500);
+          })
+          .then(() => {
+            console.log("tabla creada con exito");
+            return this.knex("mensajes").select("*");
+          })
+          .catch((err) => {
+            console.log(err);
+            throw err;
+          })
+          .finally(() => {
+            this.knex.destroy();
+          });
+      }
+    };
+  }
 
-    crearTablaMsj(){
+  ListarMsjs() {
+    return this.knex("mensajes").select("*");
+  }
 
-        this.knex.schema.hasTable('mensajes')
-        .then((resp)=>{
-            Existe(resp)
-        })
-        
-        const Existe = (existe) => {
-            if(existe){
-                console.log('La tabla mensajes ya existe');
-                return this.knex('mensajes').select('*')
-            }else {
-                console.log('La tabla mensajes no existe y se procede a ser creada');
-                this.knex.schema.createTable('mensajes', table => {
-                    table.string('email', 100);
-                    table.string('fyh', 50);
-                    table.string('mensaje', 500);
-                })
-                .then(()=> {
-                    console.log('tabla creada con exito');
-                    return this.knex('mensajes').select('*')
-                }).catch((err) => { console.log(err); throw err})
-                .finally(() => {
-                    this.knex.destroy()
-                })
-                
-            }
-        }  
-        
-    }
-    
-    ListarMsjs(){
-
-        return this.knex('mensajes').select('*')
-        
-    }
-    
-    guardarMsj( data ) {
-
-        return this.knex('mensajes').insert(data)
-    
-    }
+  guardarMsj(data) {
+    return this.knex("mensajes").insert(data);
+  }
 }
 
-
-export default ApiMsjSQL
+export default ApiMsjSQL;
